@@ -4,6 +4,7 @@ dotenv.config();
 import OpenAI from "openai";
 import { GoogleGenAI } from "@google/genai";
 import fs from "fs";
+import { Moderations } from "openai/resources";
 
 
 
@@ -360,9 +361,17 @@ const client = new OpenAI({
 // "base64" = Encoding format.
 // Buffer.from() = Base64 ko binary data mein convert karta hai.
 
+// -----------------------------------------------------------
+// next concept of open ai in voice.js{open ai audio api concept}
+//------------------------------------------------------------------
 
-// next concept of open ai in voice.js
-
+//Embeddings
+//Text ko numerical vector representation mein convert karna.
+/* const response =await client.embeddings.create({
+    model:"text-embedding-3-large",
+    input:"Hello, how are you?"
+});
+console.log(response.data[0].embedding.length); //vector length print karega
 
 
 
@@ -370,3 +379,117 @@ const client = new OpenAI({
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
+ */
+
+// Use cases:
+// - Semantic search
+// - RAG
+// - Recommendation systems
+// - Similarity search
+
+// -----------------------------------------------------
+
+//Web Search in OpenAI API
+/* 
+Web Search is a built-in tool in OpenAI that allows an AI model to search the internet and retrieve up-to-date information while generating a response.
+
+Normally, an LLM answers using the knowledge it learned during training. Its knowledge may be outdated.
+
+But with Web Search, the model can retrieve fresh information from the internet and use it to answer the user's question. 
+
+*/
+/* 
+User:
+"What are the latest AI developments?"    ---->input
+
+          |
+          v
+     OpenAI Model
+          |
+          v
+   Decides to use Web Search
+          |
+          v
+     Web Search Tool
+          |
+          v
+   Searches the Internet
+          |
+          v
+   Gets Search Results
+          |
+          v
+  Results automatically
+  returned to the model
+          |
+          v
+    Model understands
+    and analyzes results
+          |
+          v
+      Final Answer
+ */
+
+
+/*
+ const response = await client.responses.create({
+    model: "gpt-4o",
+    tools: [
+        {
+            type: "web_search"
+        }
+    ],
+    input: "What is the latest news about AI?"
+});
+
+console.log(response.output_text);
+*/
+
+// --------------------------------------------------------
+
+//moderation
+
+// Moderation is a safety mechanism in OpenAI that helps detect harmful,
+//  unsafe, or inappropriate content in text and images
+
+// Moderation can identify categories such as:
+// - Hate
+// - Harassment
+// - Self-harm
+// - Sexual content
+// - Violence
+// - Illicit activities
+
+/*
+ const response = await client.moderations.create({
+
+    model: "omni-moderation-latest",
+
+    input: "I want to hurt someone."
+});
+
+const moderationResult = response.results[0];
+
+if (moderationResult.flagged) {
+    console.log("Content is flagged for moderation.");
+    console.log("Categories:", moderationResult.categories);
+} else {
+    console.log("Content is safe.");
+}
+ */
+
+// custom Moderations system
+ 
+/*
+ ex-->
+
+function checkContent(input) {
+    const blockedWords = ["example1", "example2"];
+
+    const isBlocked = blockedWords.some(word =>
+        input.toLowerCase().includes(word)
+    );
+
+    return !isBlocked;
+}
+ */

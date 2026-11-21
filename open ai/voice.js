@@ -176,8 +176,80 @@ console.log(audioUnderstandingResponse.choices[0].message.content);
 
 */
 
-//Audio-to-Audio (Speech-to-Speech)
+/*
+Audio-to-Audio (Speech-to-Speech)
 
+ 
+Audio Input → AI Processing → Audio Output
+
+The user speaks, AI processes the audio and directly generates spoken output.
+
+        User Voice
+             |
+             v
+         Audio Input
+             |
+             v
+        Audio Model
+             |
+             v
+      Understand Question
+             |
+             v
+       Generate Answer
+             |
+             v
+       Generate Audio
+             |
+             v
+         Audio Output
+             |
+             v
+          AI Voice
+*/
+
+const audioBuffer= fs.readFileSync("Recording_3.mp3");
+
+const base64Audio = audioBuffer.toString("base64");
+
+const response = await client.chat.completions.create({
+    model: "gpt-audio-1.5",
+    modalities:["text", "audio"],
+    audio:{
+        voice:"alloy",
+        format:"mp3"
+    },
+    messages:[
+        {
+            role:"user",
+            content:[
+                {
+                    type:"text",
+                    text:"listen to this audio and answer the question"
+                },{
+                    type:"input_audio",
+                    input_audio:{
+                        data:base64Audio,
+                        format:"mp3"
+                    }
+                }
+            ]
+        }
+    ]
+    
+})
+
+const message=response.choices[0].message;
+
+//print text answer
+console.log(message.audio.transcript);
+
+//convert base64 audio to buffer
+const outputAudioBuffer=Buffer.from(await message.audio.data,"base64");
+
+//save audio to file
+fs.writeFileSync("output.mp3",outputAudioBuffer);
+console.log("Audio file generated: output.mp3");
 
 
 
